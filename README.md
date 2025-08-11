@@ -11,9 +11,9 @@ pip install git+https://github.com/nhanb/pyinfra-nspawn-connector.git
 ```python
 # inventory.py:
 hosts = [
-    ("nspawn/machine_name", {}),
+    ("@nspawn/machine-name", {}),
 ]
 
 # or from the command line:
-[sudo/doas] pyinfra @nspawn/my-machine exec -- cat /etc/os-release
+pyinfra @nspawn/machine-name exec -- cat /etc/os-release
 ```

@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyinfra-nspawn-connector"
+version = "0.1.0"
+
+# This is the key part - register the connector with pyinfra
+[project.entry-points."pyinfra.connectors"]
+print = "pyinfra_nspawn_connector:PyinfraNspawnConnector"

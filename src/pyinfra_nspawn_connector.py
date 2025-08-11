@@ -2,6 +2,7 @@ import subprocess
 from typing import TYPE_CHECKING
 
 from pyinfra.connectors.base import BaseConnector
+from pyinfra.connectors.util import CommandOutput, OutputLine
 from typing_extensions import Unpack
 
 if TYPE_CHECKING:
@@ -51,18 +52,26 @@ class PyinfraNspawnConnector(BaseConnector):
 
         proc = subprocess.run(
             full_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            capture_output=True,
             text=True,
         )
 
         if print_output:
             print("<<", proc.stdout)
 
-        return (
-            proc.returncode == 0,
-            proc.stdout,
-        )
+        success = proc.returncode == 0
+
+        stdout = [
+            OutputLine(buffer_name="stdout", line=str(i + 1))
+            for i, line in enumerate(proc.stdout.splitlines())
+        ]
+        stderr = [
+            OutputLine(buffer_name="stderr", line=str(i + 1))
+            for i, line in enumerate(proc.stderr.splitlines())
+        ]
+        command_output = CommandOutput(stdout + stderr)
+
+        return (success, command_output)
 
     def put_file(
         self,

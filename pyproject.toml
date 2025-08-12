@@ -9,3 +9,8 @@ version = "0.1.0"
 # This is the key part - register the connector with pyinfra
 [project.entry-points."pyinfra.connectors"]
 nspawn = "pyinfra_nspawn_connector:PyinfraNspawnConnector"
+
+[dependency-groups]
+dev = [
+    "pyinfra>=3.4.1",
+]

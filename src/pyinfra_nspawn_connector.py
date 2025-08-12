@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from pyinfra.connectors.base import BaseConnector
 from pyinfra.connectors.util import CommandOutput, OutputLine
-from typing_extensions import Unpack
+from typing_extensions import Unpack, override
 
 if TYPE_CHECKING:
     from pyinfra.api.arguments import ConnectorArguments
@@ -20,15 +20,15 @@ class PyinfraNspawnConnector(BaseConnector):
             ["@nspawn"],
         )
 
-    def connect(self):
+    @override
+    def connect(self) -> None:
         """
         Ensure the container is up
         """
         subprocess.run(
-            ["machinectl", "start", self.host.data.get("machine_name")],
+            ["machinectl", "start", self.host.data.machine_name],
             check=True,
         )
-        return True
 
     def run_shell_command(
         self,
@@ -37,12 +37,16 @@ class PyinfraNspawnConnector(BaseConnector):
         print_input: bool = False,
         **arguments: Unpack["ConnectorArguments"],
     ):
-        machine_name = self.host.data.get("machine_name")
+        machine_name = self.host.data.machine_name
         full_cmd = [
             "machinectl",
+            # Commands with long outputs (e.g. `dpkg -l`) may "helpfully" pipe into
+            # `less` automatically, blocking our whole script.
+            # Setting PAGER=cat prevents that.
+            "--setenv=PAGER=cat",
             "shell",
             machine_name,
-            "/usr/bin/bash",
+            "/usr/bin/sh",
             "-c",
             str(command),
         ]

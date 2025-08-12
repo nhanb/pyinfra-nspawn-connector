@@ -13,4 +13,13 @@ nspawn = "pyinfra_nspawn_connector:PyinfraNspawnConnector"
 [dependency-groups]
 dev = [
     "pyinfra>=3.4.1",
+    "pyinfra-nspawn-connector",
 ]
+
+[tool.uv.workspace]
+members = [
+    ".",
+]
+
+[tool.uv.sources]
+pyinfra-nspawn-connector = { workspace = true }

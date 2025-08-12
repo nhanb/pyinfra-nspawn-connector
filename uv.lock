@@ -444,12 +444,16 @@ source = { editable = "." }
 [package.dev-dependencies]
 dev = [
     { name = "pyinfra" },
+    { name = "pyinfra-nspawn-connector" },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pyinfra", specifier = ">=3.4.1" }]
+dev = [
+    { name = "pyinfra", specifier = ">=3.4.1" },
+    { name = "pyinfra-nspawn-connector", editable = "." },
+]
 
 [[package]]
 name = "pynacl"

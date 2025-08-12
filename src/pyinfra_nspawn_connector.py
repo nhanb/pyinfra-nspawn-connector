@@ -67,12 +67,12 @@ class PyinfraNspawnConnector(BaseConnector):
         success = proc.returncode == 0
 
         stdout = [
-            OutputLine(buffer_name="stdout", line=str(i + 1))
-            for i, line in enumerate(proc.stdout.splitlines())
+            OutputLine(buffer_name="stdout", line=line)
+            for line in proc.stdout.splitlines()
         ]
         stderr = [
-            OutputLine(buffer_name="stderr", line=str(i + 1))
-            for i, line in enumerate(proc.stderr.splitlines())
+            OutputLine(buffer_name="stderr", line=line)
+            for line in proc.stderr.splitlines()
         ]
         command_output = CommandOutput(stdout + stderr)
 

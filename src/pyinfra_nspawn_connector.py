@@ -1,6 +1,9 @@
+import os
 import subprocess
+from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
+from pyinfra.api.util import get_file_io
 from pyinfra.connectors.base import BaseConnector
 from pyinfra.connectors.util import CommandOutput, OutputLine
 from typing_extensions import Unpack, override
@@ -55,11 +58,7 @@ class PyinfraNspawnConnector(BaseConnector):
         if print_input:
             print(">>", full_cmd)
 
-        proc = subprocess.run(
-            full_cmd,
-            capture_output=True,
-            text=True,
-        )
+        proc = subprocess.run(full_cmd, capture_output=True, text=True)
 
         if print_output:
             print("<<", proc.stdout)
@@ -87,7 +86,43 @@ class PyinfraNspawnConnector(BaseConnector):
         print_input: bool = False,
         **arguments,
     ) -> bool:
-        return False
+        _, temp_filename = mkstemp()
+
+        try:
+            # Load our file or IO object and write it to the temporary file
+            with get_file_io(filename_or_io) as file_io:
+                with open(temp_filename, "wb") as temp_f:
+                    data = file_io.read()
+
+                    if isinstance(data, str):
+                        data = data.encode()
+
+                    temp_f.write(data)
+
+            machine_name = self.host.data.machine_name
+
+            full_cmd = [
+                "machinectl",
+                "copy-to",
+                machine_name,
+                temp_filename,
+                remote_filename,
+            ]
+
+            if print_input:
+                print(">>", full_cmd)
+
+            proc = subprocess.run(full_cmd, capture_output=True, text=True)
+
+            if print_output:
+                print("<< stdout: ", proc.stdout)
+                print("<< stderr: ", proc.stderr)
+
+            success = proc.returncode == 0
+            return success
+
+        finally:
+            os.remove(temp_filename)
 
     def get_file(
         self,

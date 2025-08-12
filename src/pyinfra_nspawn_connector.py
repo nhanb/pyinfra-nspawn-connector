@@ -40,6 +40,7 @@ class PyinfraNspawnConnector(BaseConnector):
         machine_name = self.host.data.machine_name
         full_cmd = [
             "machinectl",
+            "--quiet",  # prevent machinectl's own stderr output
             # Commands with long outputs (e.g. `dpkg -l`) may "helpfully" pipe into
             # `less` automatically, blocking our whole script.
             # Setting PAGER=cat prevents that.

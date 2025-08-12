@@ -3,8 +3,10 @@
 Feature checklist:
 
 - [x] `run_shell_command`
-- [ ] `put_file`
+- [x] `put_file`
 - [ ] `get_file`
+
+I've only implemented the bare minimum for my use case to work. YMMV.
 
 Don't hold me responsible if this eats your files or kills your pets.
 I'm not saying it will, but I ain't promising it 100% won't.

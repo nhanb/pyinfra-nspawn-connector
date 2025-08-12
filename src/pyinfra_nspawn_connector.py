@@ -41,6 +41,13 @@ class PyinfraNspawnConnector(BaseConnector):
         **arguments: Unpack["ConnectorArguments"],
     ):
         machine_name = self.host.data.machine_name
+
+        command_prefix = []
+        if arguments.get("_sudo"):
+            command_prefix.extend(["/usr/bin/sudo", "-H", "--preserve-env=PAGER"])
+            if sudo_user := arguments.get("_sudo_user"):
+                command_prefix.extend(["-u", sudo_user])
+
         full_cmd = [
             "machinectl",
             "--quiet",  # prevent machinectl's own stderr output
@@ -50,6 +57,7 @@ class PyinfraNspawnConnector(BaseConnector):
             "--setenv=PAGER=cat",
             "shell",
             machine_name,
+            *command_prefix,
             "/usr/bin/sh",
             "-c",
             str(command),
